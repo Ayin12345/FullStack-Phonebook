@@ -6,29 +6,9 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
-app.use(morgan((tokens, req, res) => {
-  const method = tokens.method(req,res)
+morgan.token('request-body', (req) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'))
 
-  if(method === 'POST') {
-    const body = JSON.stringify(req.body)
-
-    return [
-      tokens.method(req,res),
-      tokens.url(req, res),
-      tokens.status(req, res),
-      tokens.res(req, res, 'content-length'), '-',
-      tokens['response-time'](req, res), 'ms',
-      body
-    ].join(' ')
-  }
-  return [
-    tokens.method(req,res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, 'content-length'), '-',
-    tokens['response-time'](req, res), 'ms',
-  ].join(' ')
-}))
 
 let persons = [
     { 
